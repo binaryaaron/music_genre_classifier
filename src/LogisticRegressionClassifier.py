@@ -1,6 +1,6 @@
 """
-LogisticRegressionClassifer.py handles implementation of the meaty parts of the classifier -
-estimation of priors and predicting new data.
+LogisticRegressionClassifer.py handles implementation of the meaty parts of the
+classifier - estimation of priors and predicting new data.
 """
 
 
@@ -14,9 +14,7 @@ try:
     import numpy as np
     from scipy.special import expit
     from sklearn.cross_validation import KFold
-    import utils 
-
-
+    import utils
 except ImportError:
     raise ImportError("This program requires Numpy and scikit-learn")
 
@@ -34,7 +32,7 @@ class LogisticRegressionClassifier(object):
             Data:
                 X: 2d numpy array of data. row is a sample, column is a feature
                 y: 1d numpy array of data labels
-                X_test: testing data, same number of columns as X 
+                X_test: testing data, same number of columns as X
                 y_test: 1d numpy array of data labels for the testing set
                 class_labels: dictionary of {'class': x} for lookups
 
@@ -220,37 +218,5 @@ class LogisticRegressionClassifier(object):
         pred_classes = np.zeros((K, W.shape[0])) - 1
 
         for k in range(K-1):
-            pred_classes[k,:] = _logistic(np.dot(W, X_new[k].T))
+            pred_classes[k, :] = self._logistic(np.dot(W, X_new[k].T))
         return pred_classes.argmax(axis=1), pred_classes
-
-
-    def plot_confusion_matrix(cm, title='Confusion matrix', normalized=True,
-                                cmap=plt.cm.Oranges, save_file=""):
-        """
-        Displays the confussion matrix indicated by `cm`. If argument
-        `normalized` is Ture, then the matrix is normalized. Optionally
-        the image can be saved to a file
-
-        Arguments:
-        ----------
-        `cm`: The confusion matrix to be displayed.
-        `title`: The title for the window.
-        `normalized`: If True, normalizes the matrix before showing it.
-        `cmap`: Colormap to use.
-        `save_file`: If string different than empty, the resulting image is
-        stored in such file.
-        """
-        if normalized:
-            cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        plt.imshow(cm, interpolation='nearest', cmap=cmap)
-        plt.title(title)
-        plt.colorbar()
-        plt.tight_layout()
-        plt.ylabel('True label')
-        plt.xlabel('Predicted label')
-
-        if save_file:
-            plt.savefig(save_file)
-
-        return cm
-

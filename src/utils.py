@@ -1,6 +1,22 @@
 # this is just a test
-import numpy as np
-import glob
+try:
+    eval("print x")
+except:
+    raise FutureWarning
+    import sys
+    sys.exit()
+try:
+    import numpy as np
+    import matplotlib.pyplot as plt
+    # needed for the recursive glob
+    import glob2
+    import glob
+    from scipy.io.wavfile import read
+    import scipy as sp
+except ImportError:
+    raise ImportError("""This program requires glob2, matplotlib, numpy, scipy,
+    and sklearn, all of which can be installed via \n
+    `pip3 install requirements.txt` in the root directory of this repo.""")
 
 
 def read_features(directory='../data/', feature='fft'):
@@ -40,3 +56,54 @@ def read_features(directory='../data/', feature='fft'):
         return classes, class_labels, filter_ffts()
     return (classes, class_labels,
             np.array([np.load(f) for f in all_features]))
+
+
+def plot_confusion_matrix(cm,
+                          title='Confusion matrix',
+                          normalized=True,
+                          cmap=plt.cm.Oranges,
+                          save_file=""):
+    """
+    Displays the confusion matrix indicated by `cm`. If argument
+    `normalized` is True, then the matrix is normalized. Optionally
+    the image can be saved to a file. This was taken from Andres and I's
+    version from the malware project
+
+    Arguments:
+    ----------
+    `cm`: The confusion matrix to be displayed.
+    `title`: The title for the window.
+    `normalized`: If True, normalizes the matrix before showing it.
+    `cmap`: Colormap to use.
+    `save_file`: If string different than empty, the resulting image is
+    stored in such file.
+    """
+    if normalized:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    if save_file:
+        plt.savefig(save_file)
+    return cm
+
+
+def extract_ffts():
+    """
+    Extracts the first 1000 ffts from the list of wavfiles.
+    """
+
+    def _extract_feats(filename):
+        savename = filename[0: len(filename)-4] + '.fft'
+        samp_rate, X = read(filename)
+        ffts = sp.fft(X, n=1000)
+        np.save(savename, ffts)
+
+    path = '/cs/genres/*/*.wav'
+    classes = [line for line in glob2.glob(path)]
+    for line in classes:
+        print("extracting %s" % line)
+        _extract_feats(line)
