@@ -13,6 +13,15 @@ def read_features(directory='../data/', feature='fft'):
     Returns:
         Tuple of (class labels, featureset)
     """
+    def filter_ffts():
+        features = np.array([np.load(f) for f in all_features])
+        # take the absolute value of the ffts
+        features = np.absolute(features)
+        # normalizes over each feature
+        features = features / np.max(features, axis=0)
+        # inserts the proper row of ones to the matrix
+        features = np.insert(features, 0, 1, axis=1)
+        return features
 
     glob_id = directory + '*.' + feature + '.npy'
     all_features = glob.glob(glob_id)
@@ -27,8 +36,7 @@ def read_features(directory='../data/', feature='fft'):
     label_vec = [classes[lab] for lab in class_name_list]
     class_labels = np.array(label_vec)
     # reads all the features in via numpy
+    if feature == 'fft':
+        return classes, class_labels, filter_ffts()
     return (classes, class_labels,
             np.array([np.load(f) for f in all_features]))
-
-
-
