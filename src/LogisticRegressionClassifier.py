@@ -14,7 +14,6 @@ try:
     import numpy as np
     from scipy.special import expit
     from sklearn.cross_validation import KFold
-    from sklearn.cross_validation  import StratifiedKFold
     import sklearn.metrics as metrics
     if sys.version_info < (3, 2):
         # python too old, kill the script
@@ -154,8 +153,6 @@ class LogisticRegressionClassifier(object):
                     print('''Step %d: Error: %f updating learning rate: %f'''
                           % (i, self.error, self.eta))
             self.error = _error
-            # f = d - (_lambda * W)
-            # W += (eta * f)
             self.W += (self.eta * (d - (_lambda * self.W)))
             self.metrics['train_rounds'] += 1
 
@@ -187,10 +184,6 @@ class LogisticRegressionClassifier(object):
         args:
             cv (sklearn scrossvalidate object): any valid CV object.
         """
-
-
-        cv_scores = []
-        cmatrices = []
         names = {v:k for k,v in self.class_dict.items()}
         names = list(zip(*names.items()))[1]
 
@@ -236,11 +229,11 @@ class LogisticRegressionClassifier(object):
         print(self.metrics['cv_average'])
 
         print("""we love metrics.Here is the average accuracy for the CV
-        runs.""") 
+        runs.""")
         print(np.asarray(self.metrics['accuracy']).mean())
 
-
-    def train(self, rounds=1000, cv=False, reset=False, eta=None, lambda_=None):
+    def train(self, rounds=1000, cv=False,
+              reset=False, eta=None, lambda_=None):
         """
         Trains the model on the currently held data. This was entirely for
         personal testing.
@@ -267,8 +260,8 @@ class LogisticRegressionClassifier(object):
 
     def init_weights(self):
         self.W = 0.01 + np.zeros(shape=(len(self.class_dict),
-                              self.X.shape[1]),
-                              dtype='float64')
+                                 self.X.shape[1]),
+                                 dtype='float64')
         # put all ones in the first row
         self.W.T[0] = 1
 
@@ -285,4 +278,3 @@ class LogisticRegressionClassifier(object):
         for k in range(K-1):
             pred_classes[k, :] = self._logistic(np.dot(W, X_new[k].T))
         return pred_classes.argmax(axis=1), pred_classes
-
