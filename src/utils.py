@@ -16,6 +16,8 @@ try:
     import glob
     from scipy.io.wavfile import read
     import scipy as sp
+    from sklearn.preprocessing import MinMaxScaler
+    import sklearn.preprocessing as pre
 except ImportError:
     raise ImportError("""This program requires glob2, matplotlib, numpy, scipy,
     and sklearn, all of which can be installed via 
@@ -36,6 +38,8 @@ def read_features(directory='../data/', feature='fft'):
         features = np.array([np.load(f) for f in all_features])
         # take the absolute value of the ffts
         features = np.absolute(features)
+        # scaler = MinMaxScaler(feature_range=(0,1))
+        # features = scaler.fit_transform(features)
         # normalizes over each feature
         features = features / np.max(features, axis=0)
         # inserts the proper row of ones to the matrix
@@ -44,7 +48,10 @@ def read_features(directory='../data/', feature='fft'):
 
     def filter_mfc():
         mfcs =  np.array([np.load(f) for f in all_features])
-        mfcs = mfcs / np.max(mfcs, axis=0)
+        # mfcs = mfcs / np.max(mfcs, axis=0)
+        # scaler = MinMaxScaler(feature_range=(0,1))
+        # mfcs = scaler.fit_transform(mfcs)
+        pre.scale(mfcs, copy=False)
         return np.insert(mfcs, 0, 1, axis=1)
 
     glob_id = directory + '*.' + feature + '.npy'
