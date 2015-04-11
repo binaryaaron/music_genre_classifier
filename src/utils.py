@@ -1,10 +1,13 @@
-# this is just a test
-try:
-    eval("print x")
-except:
-    raise FutureWarning
-    import sys
-    sys.exit()
+"""
+Utils provides the utilties for the classifer and whatnot.
+"""
+
+__author__ = "Aaron Gonzales"
+__copyright__ = "MIT"
+__license__ = "MIT"
+__email__ = "agonzales@cs.unm.edu"
+
+
 try:
     import numpy as np
     import matplotlib.pyplot as plt
@@ -15,9 +18,9 @@ try:
     import scipy as sp
 except ImportError:
     raise ImportError("""This program requires glob2, matplotlib, numpy, scipy,
-    and sklearn, all of which can be installed via \n
-    `pip3 install requirements.txt` in the root directory of this repo.""")
-
+    and sklearn, all of which can be installed via 
+    `pip3 install requirements.txt`
+    in the root directory of this repo.""")
 
 def read_features(directory='../data/', feature='fft'):
     """
@@ -39,6 +42,11 @@ def read_features(directory='../data/', feature='fft'):
         features = np.insert(features, 0, 1, axis=1)
         return features
 
+    def filter_mfc():
+        mfcs =  np.array([np.load(f) for f in all_features])
+        mfcs = mfcs / np.max(mfcs, axis=0)
+        return np.insert(mfcs, 0, 1, axis=1)
+
     glob_id = directory + '*.' + feature + '.npy'
     all_features = glob.glob(glob_id)
     # trims filename and splits on periods to get just the class type
@@ -54,8 +62,7 @@ def read_features(directory='../data/', feature='fft'):
     # reads all the features in via numpy
     if feature == 'fft':
         return classes, class_labels, filter_ffts()
-    return (classes, class_labels,
-            np.array([np.load(f) for f in all_features]))
+    return (classes, class_labels, filter_mfc())
 
 
 def plot_confusion_matrix(cm,
