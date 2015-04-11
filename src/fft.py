@@ -1,7 +1,21 @@
-import glob2  # needed for recursive glob
-from scipy.io.wavfile import read
-import scipy as sp
-import numpy as np
+try:
+    eval("print x")
+except:
+    raise FutureWarning
+    import sys
+    sys.exit()
+try:
+    import numpy as np
+    import matplotlib.pyplot as plt
+    # needed for the recursive glob
+    import glob2
+    import glob
+    from scipy.io.wavfile import read
+    import scipy as sp
+except ImportError:
+    raise ImportError("""This program requires glob2, matplotlib, numpy, scipy,
+    and sklearn, all of which can be installed via \n
+    `pip3 install requirements.txt` in the root directory of this repo.""")
 
 
 def _extract_fft(filename):
