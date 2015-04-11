@@ -1,0 +1,1591 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass{article}
+
+    
+    
+    \usepackage{graphicx} % Used to insert images
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{color} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    
+
+    
+    
+    \definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+    \definecolor{darkorange}{rgb}{.71,0.21,0.01}
+    \definecolor{darkgreen}{rgb}{.12,.54,.11}
+    \definecolor{myteal}{rgb}{.26, .44, .56}
+    \definecolor{gray}{gray}{0.45}
+    \definecolor{lightgray}{gray}{.95}
+    \definecolor{mediumgray}{gray}{.8}
+    \definecolor{inputbackground}{rgb}{.95, .95, .85}
+    \definecolor{outputbackground}{rgb}{.95, .95, .95}
+    \definecolor{traceback}{rgb}{1, .95, .95}
+    % ansi colors
+    \definecolor{red}{rgb}{.6,0,0}
+    \definecolor{green}{rgb}{0,.65,0}
+    \definecolor{brown}{rgb}{0.6,0.6,0}
+    \definecolor{blue}{rgb}{0,.145,.698}
+    \definecolor{purple}{rgb}{.698,.145,.698}
+    \definecolor{cyan}{rgb}{0,.698,.698}
+    \definecolor{lightgray}{gray}{0.5}
+    
+    % bright ansi colors
+    \definecolor{darkgray}{gray}{0.25}
+    \definecolor{lightred}{rgb}{1.0,0.39,0.28}
+    \definecolor{lightgreen}{rgb}{0.48,0.99,0.0}
+    \definecolor{lightblue}{rgb}{0.53,0.81,0.92}
+    \definecolor{lightpurple}{rgb}{0.87,0.63,0.87}
+    \definecolor{lightcyan}{rgb}{0.5,1.0,0.83}
+    
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{Logistic Regression}
+    \author{Aaron Gonzales}
+
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=blue,
+      linkcolor=darkorange,
+      citecolor=darkgreen,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+
+    
+
+\section{Overview of the project}\label{overview-of-the-project}
+
+I have a working logistic regression classifier built in python and
+numpy. It seems to work somewhat quickly but may not be that robust or
+as stable as I'd like it to be. There are a great number of things to
+look at with respect to optimizing gradient descent and the various
+fiddly bits of the program.
+
+This is an ipython notebook; code can be executed direclty from here.
+
+When you run the program, navigate to the root of this project and then
+to \texttt{/src}.
+
+\texttt{python3\ ./main.py}
+
+will make the program work.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}22}]:} \PY{o}{\PYZpc{}}\PY{k}{load\PYZus{}ext} autoreload
+         \PY{o}{\PYZpc{}}\PY{k}{autoreload} 2
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{import} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics}  \PY{k}{as} \PY{n+nn}{metrics}
+         \PY{k+kn}{import} \PY{n+nn}{utils} \PY{k}{as} \PY{n+nn}{utils}
+         \PY{k+kn}{from} \PY{n+nn}{LogisticRegressionClassifier} \PY{k}{import} \PY{n}{LogisticRegressionClassifier}
+         \PY{o}{\PYZpc{}}\PY{k}{pylab} inline
+\end{Verbatim}
+
+    I had previously extracted the ffts and mcfts from the data; all of them
+live in the /data/ folder of this package. As such, loading them in is
+easy. Methods to extract them are in the \texttt{fft.py} and
+\texttt{mfcc.py} files; both were ran from an IPython environment. The
+FFT data was scaled to \{0, 1\} and the mfcs were scaled via z-score.
+the data is the variables \texttt{(fft,\ mfcs)}, the labels are
+hopefully labeled clearly enough, and the dictionary is just a mapping
+of label ID to actual english word.
+
+Note: I used the full 1000 song dataset for this; not the reduced set
+from Trilce.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{fft\PYZus{}dict}\PY{p}{,} \PY{n}{fft\PYZus{}labels}\PY{p}{,} \PY{n}{ffts} \PY{o}{=} \PY{n}{utils}\PY{o}{.}\PY{n}{read\PYZus{}features}\PY{p}{(}\PY{n}{feature}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{fft}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{mfc\PYZus{}dict}\PY{p}{,} \PY{n}{mfc\PYZus{}labels}\PY{p}{,} \PY{n}{mfcs} \PY{o}{=} \PY{n}{utils}\PY{o}{.}\PY{n}{read\PYZus{}features}\PY{p}{(}\PY{n}{feature}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{mfc}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+    The classifer is implemented as a class and holds its metrics and data
+information internally after calls to its methods. It is initialized
+with the data as given:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{lrc\PYZus{}fft} \PY{o}{=} \PY{n}{LogisticRegressionClassifier}\PY{p}{(}\PY{n}{ffts}\PY{p}{,} \PY{n}{fft\PYZus{}labels}\PY{p}{,} \PY{n}{fft\PYZus{}dict}\PY{p}{)}
+        \PY{n}{lrc\PYZus{}mfc} \PY{o}{=} \PY{n}{LogisticRegressionClassifier}\PY{p}{(}\PY{n}{mfcs}\PY{p}{,} \PY{n}{mfc\PYZus{}labels}\PY{p}{,} \PY{n}{mfc\PYZus{}dict}\PY{p}{)}
+\end{Verbatim}
+
+    \subsection{FFT components}\label{fft-components}
+
+Now that we have our data loaded, we can go ahead and fit the logistic
+regression model to it. Internally it is performing 10-fold cross
+validation with shuffling via Sklearn's \texttt{cross\_validated}
+module.
+
+\subsubsection{Gradient Descent}\label{gradient-descent}
+
+I went with the vectorized version of gradient descent discussed in
+Piazza. My learning rate was adaptive to the custom `error' rate defined
+as the max value from the column means from the dot product of the feature
+matrix to the estimated P(Y|X,W) matrix and our $\Delta$ matrix.
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{lrc\PYZus{}fft}\PY{o}{.}\PY{n}{cross\PYZus{}validate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Training cross validation round 0
+----------------------------------
+Step 0: Error: -1.000000 updating learning rate: 0.001000
+Final Step 1000: Error: 0.120369 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.30      0.30      0.30        10
+      disco       0.50      0.38      0.43        13
+       rock       0.38      0.27      0.32        11
+     reggae       0.11      0.10      0.11        10
+       jazz       0.22      0.29      0.25         7
+  classical       0.47      0.78      0.58         9
+     hiphop       0.18      0.25      0.21         8
+        pop       0.33      0.43      0.38         7
+      metal       0.82      0.75      0.78        12
+    country       0.38      0.23      0.29        13
+
+avg / total       0.39      0.38      0.38       100
+
+Confusion matrix
+----------------------------------
+[[3 0 1 3 2 0 0 0 1 0]
+ [0 5 2 0 2 0 2 2 0 0]
+ [1 1 3 2 0 0 1 0 1 2]
+ [1 1 0 1 0 3 3 0 0 1]
+ [1 0 0 0 2 2 1 1 0 0]
+ [0 0 0 0 2 7 0 0 0 0]
+ [0 0 0 2 0 0 2 3 0 1]
+ [0 1 1 0 0 0 1 3 0 1]
+ [1 1 0 0 0 0 1 0 9 0]
+ [3 1 1 1 1 3 0 0 0 3]]
+----------------------------------
+Training cross validation round 1
+----------------------------------
+Final Step 1000: Error: 0.119233 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.36      0.31      0.33        13
+      disco       0.33      0.20      0.25        10
+       rock       0.33      0.11      0.17         9
+     reggae       0.33      0.40      0.36        10
+       jazz       0.40      0.25      0.31        16
+  classical       0.29      0.75      0.41         8
+     hiphop       0.25      0.08      0.12        12
+        pop       0.50      0.70      0.58        10
+      metal       0.55      0.86      0.67         7
+    country       0.00      0.00      0.00         5
+
+avg / total       0.35      0.35      0.32       100
+
+Confusion matrix
+----------------------------------
+[[4 1 1 1 2 2 1 0 1 0]
+ [0 2 0 3 0 2 1 2 0 0]
+ [0 1 1 0 1 0 0 2 1 3]
+ [2 1 0 4 1 1 0 0 1 0]
+ [3 0 0 2 4 5 0 1 0 1]
+ [1 0 0 0 0 6 0 0 0 1]
+ [0 0 1 2 1 3 1 2 1 1]
+ [0 0 0 0 0 1 0 7 0 2]
+ [0 0 0 0 0 0 1 0 6 0]
+ [1 1 0 0 1 1 0 0 1 0]]
+----------------------------------
+Training cross validation round 2
+----------------------------------
+Final Step 1000: Error: 0.120439 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.12      0.08      0.10        13
+      disco       0.27      0.30      0.29        10
+       rock       0.43      0.21      0.29        14
+     reggae       0.62      0.42      0.50        12
+       jazz       0.43      0.38      0.40         8
+  classical       0.43      1.00      0.61        10
+     hiphop       0.00      0.00      0.00         5
+        pop       0.71      0.56      0.63         9
+      metal       0.33      0.67      0.44         9
+    country       0.30      0.30      0.30        10
+
+avg / total       0.38      0.39      0.36       100
+
+Confusion matrix
+----------------------------------
+[[ 1  0  2  0  1  3  1  0  1  4]
+ [ 1  3  1  1  0  2  0  0  2  0]
+ [ 0  3  3  1  0  1  0  0  5  1]
+ [ 0  2  0  5  1  2  0  0  2  0]
+ [ 1  0  0  0  3  3  0  0  0  1]
+ [ 0  0  0  0  0 10  0  0  0  0]
+ [ 1  1  0  0  0  1  0  1  1  0]
+ [ 1  2  0  0  1  0  0  5  0  0]
+ [ 2  0  0  0  0  0  0  0  6  1]
+ [ 1  0  1  1  1  1  0  1  1  3]]
+----------------------------------
+Training cross validation round 3
+----------------------------------
+Final Step 1000: Error: 0.120326 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.40      0.50      0.44         8
+      disco       0.18      0.20      0.19        10
+       rock       0.22      0.22      0.22         9
+     reggae       0.08      0.11      0.10         9
+       jazz       0.33      0.18      0.24        11
+  classical       0.45      0.75      0.56        12
+     hiphop       0.50      0.33      0.40        12
+        pop       0.50      0.18      0.27        11
+      metal       0.67      0.89      0.76         9
+    country       0.25      0.22      0.24         9
+
+avg / total       0.37      0.36      0.34       100
+
+Confusion matrix
+----------------------------------
+[[4 1 1 0 0 1 0 0 0 1]
+ [1 2 2 1 1 0 1 0 1 1]
+ [2 1 2 1 0 1 0 0 1 1]
+ [0 2 1 1 1 2 1 0 1 0]
+ [1 1 0 1 2 5 0 0 0 1]
+ [1 0 1 1 0 9 0 0 0 0]
+ [0 1 0 2 0 1 4 2 1 1]
+ [0 2 1 3 1 0 1 2 0 1]
+ [0 0 0 1 0 0 0 0 8 0]
+ [1 1 1 1 1 1 1 0 0 2]]
+----------------------------------
+Training cross validation round 4
+----------------------------------
+Final Step 1000: Error: 0.118178 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.08      0.09      0.09        11
+      disco       0.00      0.00      0.00        13
+       rock       0.08      0.14      0.11         7
+     reggae       0.42      0.56      0.48         9
+       jazz       0.15      0.33      0.21         6
+  classical       0.35      0.75      0.48         8
+     hiphop       0.11      0.12      0.12         8
+        pop       1.00      0.40      0.57        10
+      metal       0.25      0.15      0.19        13
+    country       0.50      0.20      0.29        15
+
+avg / total       0.31      0.25      0.24       100
+
+Confusion matrix
+----------------------------------
+[[1 1 1 2 1 1 1 0 2 1]
+ [1 0 3 2 3 0 1 0 3 0]
+ [4 0 1 0 1 0 1 0 0 0]
+ [1 0 1 5 0 2 0 0 0 0]
+ [0 0 0 0 2 4 0 0 0 0]
+ [0 0 0 0 2 6 0 0 0 0]
+ [1 1 0 1 1 2 1 0 1 0]
+ [0 0 0 0 2 1 2 4 0 1]
+ [2 2 2 0 1 0 3 0 2 1]
+ [2 3 4 2 0 1 0 0 0 3]]
+----------------------------------
+Training cross validation round 5
+----------------------------------
+Final Step 1000: Error: 0.119959 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.29      0.50      0.36         8
+      disco       0.00      0.00      0.00        12
+       rock       0.10      0.11      0.11         9
+     reggae       0.18      0.14      0.16        14
+       jazz       0.30      0.38      0.33         8
+  classical       0.44      0.70      0.54        10
+     hiphop       0.00      0.00      0.00         8
+        pop       0.17      0.11      0.13         9
+      metal       0.41      0.78      0.54         9
+    country       0.50      0.15      0.24        13
+
+avg / total       0.24      0.27      0.23       100
+
+Confusion matrix
+----------------------------------
+[[4 1 0 0 0 0 1 0 2 0]
+ [1 0 4 1 1 0 1 0 2 2]
+ [1 0 1 1 0 1 1 0 4 0]
+ [3 0 1 2 2 1 1 3 1 0]
+ [1 0 1 0 3 2 0 1 0 0]
+ [1 0 0 1 0 7 0 1 0 0]
+ [1 0 1 3 2 0 0 0 1 0]
+ [0 1 0 3 0 1 3 1 0 0]
+ [0 2 0 0 0 0 0 0 7 0]
+ [2 0 2 0 2 4 1 0 0 2]]
+----------------------------------
+Training cross validation round 6
+----------------------------------
+Final Step 1000: Error: 0.119510 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.30      0.30      0.30        10
+      disco       0.27      0.38      0.32         8
+       rock       0.17      0.10      0.12        10
+     reggae       0.27      0.50      0.35         8
+       jazz       0.50      0.15      0.24        13
+  classical       0.47      1.00      0.64         7
+     hiphop       0.33      0.13      0.19        15
+        pop       0.73      0.73      0.73        11
+      metal       0.58      0.64      0.61        11
+    country       0.10      0.14      0.12         7
+
+avg / total       0.39      0.38      0.35       100
+
+Confusion matrix
+----------------------------------
+[[3 1 1 1 1 1 0 0 1 1]
+ [0 3 0 2 0 0 1 1 0 1]
+ [2 1 1 0 1 1 1 0 2 1]
+ [0 2 1 4 0 0 0 0 0 1]
+ [1 0 0 3 2 4 1 1 0 1]
+ [0 0 0 0 0 7 0 0 0 0]
+ [2 2 1 2 0 1 2 1 2 2]
+ [0 1 1 0 0 0 0 8 0 1]
+ [2 0 0 1 0 0 0 0 7 1]
+ [0 1 1 2 0 1 1 0 0 1]]
+----------------------------------
+Training cross validation round 7
+----------------------------------
+Final Step 1000: Error: 0.118667 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.23      0.75      0.35         4
+      disco       0.15      0.50      0.24         4
+       rock       0.33      0.07      0.12        14
+     reggae       0.12      0.11      0.12         9
+       jazz       0.62      0.56      0.59         9
+  classical       0.50      0.83      0.62        12
+     hiphop       0.25      0.17      0.20        12
+        pop       0.88      0.54      0.67        13
+      metal       0.67      0.62      0.64        13
+    country       0.14      0.10      0.12        10
+
+avg / total       0.43      0.40      0.38       100
+
+Confusion matrix
+----------------------------------
+[[ 3  0  0  0  0  1  0  0  0  0]
+ [ 0  2  0  0  0  0  0  0  0  2]
+ [ 1  4  1  2  0  1  1  0  2  2]
+ [ 1  1  0  1  1  3  1  1  0  0]
+ [ 2  1  0  0  5  1  0  0  0  0]
+ [ 1  0  0  0  1 10  0  0  0  0]
+ [ 1  2  2  0  0  2  2  0  2  1]
+ [ 0  1  0  1  1  0  3  7  0  0]
+ [ 1  1  0  2  0  0  0  0  8  1]
+ [ 3  1  0  2  0  2  1  0  0  1]]
+----------------------------------
+Training cross validation round 8
+----------------------------------
+Final Step 1000: Error: 0.121359 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.50      0.25      0.33        12
+      disco       0.50      0.23      0.32        13
+       rock       0.08      0.08      0.08        12
+     reggae       0.36      0.67      0.47         6
+       jazz       0.38      0.27      0.32        11
+  classical       0.33      0.86      0.48         7
+     hiphop       0.10      0.11      0.11         9
+        pop       0.62      0.45      0.53        11
+      metal       0.50      0.50      0.50         8
+    country       0.38      0.45      0.42        11
+
+avg / total       0.38      0.35      0.34       100
+
+Confusion matrix
+----------------------------------
+[[3 0 2 0 2 0 2 0 1 2]
+ [1 3 2 3 1 2 1 0 0 0]
+ [0 0 1 1 2 2 0 2 2 2]
+ [0 0 0 4 0 1 0 0 0 1]
+ [0 1 2 0 3 3 0 0 0 2]
+ [0 0 1 0 0 6 0 0 0 0]
+ [1 1 1 1 0 1 1 1 1 1]
+ [1 0 1 0 0 0 4 5 0 0]
+ [0 1 1 1 0 0 1 0 4 0]
+ [0 0 1 1 0 3 1 0 0 5]]
+----------------------------------
+Training cross validation round 9
+----------------------------------
+Final Step 1000: Error: 0.121285 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.50      0.45      0.48        11
+      disco       0.00      0.00      0.00         7
+       rock       0.25      0.20      0.22         5
+     reggae       0.40      0.31      0.35        13
+       jazz       0.33      0.36      0.35        11
+  classical       0.60      0.88      0.71        17
+     hiphop       0.25      0.09      0.13        11
+        pop       0.50      0.67      0.57         9
+      metal       0.60      0.67      0.63         9
+    country       0.00      0.00      0.00         7
+
+avg / total       0.38      0.42      0.39       100
+
+Confusion matrix
+----------------------------------
+[[ 5  1  0  1  1  1  0  0  1  1]
+ [ 1  0  0  0  1  1  1  2  1  0]
+ [ 0  1  1  1  0  0  0  1  0  1]
+ [ 1  1  0  4  3  0  0  1  1  2]
+ [ 1  0  1  1  4  1  0  1  0  2]
+ [ 0  0  0  0  1 15  0  0  0  1]
+ [ 0  1  0  0  0  5  1  1  1  2]
+ [ 0  0  0  2  1  0  0  6  0  0]
+ [ 0  0  1  0  0  0  2  0  6  0]
+ [ 2  0  1  1  1  2  0  0  0  0]]
+----------------------------------
+-------------
+we love confusion\_matrices. here is the average for
+              the whole training run.
+[[ 3.  0.  0.  0.  1.  1.  0.  0.  1.  1.]
+ [ 0.  2.  1.  1.  0.  0.  0.  0.  0.  0.]
+ [ 1.  1.  1.  0.  0.  0.  0.  0.  1.  1.]
+ [ 0.  1.  0.  3.  0.  1.  0.  0.  0.  0.]
+ [ 1.  0.  0.  0.  3.  3.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  8.  0.  0.  0.  0.]
+ [ 0.  0.  0.  1.  0.  1.  1.  1.  1.  0.]
+ [ 0.  0.  0.  0.  0.  0.  1.  4.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.  6.  0.]
+ [ 1.  0.  1.  1.  0.  1.  0.  0.  0.  2.]]
+we love metrics.Here is the average accuracy for the CV
+        runs.
+0.355
+    \end{Verbatim}
+
+    These are not the best scores i've ever seen.
+
+Selecting only the features that have moderate variance gives us a set
+of 200 to test.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{feature\PYZus{}selection} \PY{k}{import} \PY{n}{VarianceThreshold}
+        \PY{n}{sel} \PY{o}{=} \PY{n}{VarianceThreshold}\PY{p}{(}\PY{l+m+mf}{0.01150}\PY{p}{)}
+        \PY{n}{a} \PY{o}{=} \PY{n}{sel}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{ffts}\PY{p}{)}
+        \PY{n}{a}\PY{o}{.}\PY{n}{shape}
+        \PY{n}{lr} \PY{o}{=} \PY{n}{LogisticRegressionClassifier}\PY{p}{(}\PY{n}{a}\PY{p}{,} \PY{n}{fft\PYZus{}labels}\PY{p}{,} \PY{n}{fft\PYZus{}dict}\PY{p}{)}
+        \PY{n}{lr}\PY{o}{.}\PY{n}{cross\PYZus{}validate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Training cross validation round 0
+----------------------------------
+Step 0: Error: -1.000000 updating learning rate: 0.001000
+Final Step 1000: Error: 0.209789 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.23      0.43      0.30         7
+      disco       0.20      0.15      0.17        13
+       rock       0.30      0.33      0.32         9
+     reggae       0.09      0.09      0.09        11
+       jazz       0.14      0.08      0.11        12
+  classical       1.00      0.25      0.40         8
+     hiphop       0.12      0.10      0.11        10
+        pop       0.60      0.43      0.50        14
+      metal       0.22      0.67      0.33         6
+    country       0.18      0.20      0.19        10
+
+avg / total       0.30      0.25      0.25       100
+
+Confusion matrix
+----------------------------------
+[[3 0 0 2 1 0 0 0 0 1]
+ [1 2 5 0 0 0 1 0 3 1]
+ [1 0 3 0 0 0 2 0 2 1]
+ [1 1 0 1 2 0 2 1 2 1]
+ [1 3 0 1 1 0 0 1 3 2]
+ [2 1 1 0 1 2 0 0 1 0]
+ [1 0 0 3 0 0 1 1 2 2]
+ [1 2 1 2 0 0 1 6 0 1]
+ [0 1 0 0 0 0 1 0 4 0]
+ [2 0 0 2 2 0 0 1 1 2]]
+----------------------------------
+Training cross validation round 1
+----------------------------------
+Final Step 1000: Error: 0.214889 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.06      0.11      0.07         9
+      disco       0.00      0.00      0.00         7
+       rock       0.00      0.00      0.00        10
+     reggae       0.11      0.25      0.15         4
+       jazz       0.09      0.10      0.10        10
+  classical       0.75      0.20      0.32        15
+     hiphop       0.20      0.14      0.17        14
+        pop       0.44      0.36      0.40        11
+      metal       0.19      0.38      0.25         8
+    country       0.00      0.00      0.00        12
+
+avg / total       0.22      0.15      0.16       100
+
+Confusion matrix
+----------------------------------
+[[1 1 1 0 2 0 2 0 0 2]
+ [2 0 1 0 1 0 1 1 1 0]
+ [3 3 0 0 0 0 1 0 3 0]
+ [0 0 0 1 1 0 1 1 0 0]
+ [2 0 0 4 1 0 0 0 2 1]
+ [0 3 1 2 5 3 0 0 1 0]
+ [3 1 1 1 0 0 2 2 3 1]
+ [0 0 2 0 0 0 2 4 2 1]
+ [1 2 1 0 0 0 1 0 3 0]
+ [6 1 0 1 1 1 0 1 1 0]]
+----------------------------------
+Training cross validation round 2
+----------------------------------
+Final Step 1000: Error: 0.211684 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.20      0.22      0.21         9
+      disco       0.25      0.17      0.20        18
+       rock       0.17      0.10      0.12        10
+     reggae       0.22      0.25      0.24         8
+       jazz       0.14      0.25      0.18         4
+  classical       0.67      0.29      0.40         7
+     hiphop       0.20      0.20      0.20        15
+        pop       0.29      0.50      0.36         8
+      metal       0.43      0.55      0.48        11
+    country       0.30      0.30      0.30        10
+
+avg / total       0.28      0.27      0.26       100
+
+Confusion matrix
+----------------------------------
+[[2 2 0 0 0 0 2 0 1 2]
+ [1 3 0 0 0 1 6 5 2 0]
+ [0 1 1 3 1 0 0 2 1 1]
+ [1 0 0 2 1 0 2 0 0 2]
+ [2 0 1 0 1 0 0 0 0 0]
+ [0 1 0 0 3 2 0 0 0 1]
+ [2 1 1 3 0 0 3 1 3 1]
+ [0 0 1 1 1 0 1 4 0 0]
+ [1 4 0 0 0 0 0 0 6 0]
+ [1 0 2 0 0 0 1 2 1 3]]
+----------------------------------
+Training cross validation round 3
+----------------------------------
+Final Step 1000: Error: 0.214787 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.20      0.15      0.17        13
+      disco       0.17      0.29      0.21         7
+       rock       0.08      0.09      0.08        11
+     reggae       0.00      0.00      0.00         7
+       jazz       0.25      0.10      0.14        10
+  classical       0.33      0.20      0.25        10
+     hiphop       0.19      0.30      0.23        10
+        pop       0.62      0.56      0.59         9
+      metal       0.27      0.33      0.30         9
+    country       0.13      0.14      0.14        14
+
+avg / total       0.22      0.21      0.21       100
+
+Confusion matrix
+----------------------------------
+[[2 3 3 0 1 2 0 0 1 1]
+ [0 2 0 1 0 0 2 0 1 1]
+ [0 2 1 0 0 0 2 1 1 4]
+ [1 1 2 0 0 0 2 0 1 0]
+ [3 0 0 2 1 1 1 0 0 2]
+ [0 0 3 0 2 2 0 0 0 3]
+ [0 1 2 1 0 0 3 0 2 1]
+ [0 1 0 0 0 0 2 5 0 1]
+ [1 1 1 1 0 0 2 0 3 0]
+ [3 1 1 0 0 1 2 2 2 2]]
+----------------------------------
+Training cross validation round 4
+----------------------------------
+Final Step 1000: Error: 0.212869 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.33      0.38      0.36        13
+      disco       0.22      0.18      0.20        11
+       rock       0.12      0.20      0.15        10
+     reggae       0.75      0.19      0.30        16
+       jazz       0.40      0.18      0.25        11
+  classical       0.67      0.20      0.31        10
+     hiphop       0.10      0.14      0.12         7
+        pop       0.42      0.71      0.53         7
+      metal       0.23      0.38      0.29         8
+    country       0.15      0.29      0.20         7
+
+avg / total       0.38      0.27      0.27       100
+
+Confusion matrix
+----------------------------------
+[[5 1 2 0 0 0 1 0 2 2]
+ [1 2 3 0 0 0 3 1 1 0]
+ [1 1 2 0 0 0 1 0 3 2]
+ [2 2 1 3 1 0 2 1 3 1]
+ [0 1 1 0 2 1 0 3 0 3]
+ [1 0 4 0 2 2 0 0 0 1]
+ [1 0 1 1 0 0 1 2 1 0]
+ [0 1 0 0 0 0 0 5 0 1]
+ [1 0 1 0 0 0 2 0 3 1]
+ [3 1 1 0 0 0 0 0 0 2]]
+----------------------------------
+Training cross validation round 5
+----------------------------------
+Final Step 1000: Error: 0.214945 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.21      0.25      0.23        12
+      disco       0.17      0.20      0.18         5
+       rock       0.12      0.17      0.14        12
+     reggae       0.50      0.20      0.29        10
+       jazz       0.11      0.11      0.11         9
+  classical       0.40      0.15      0.22        13
+     hiphop       0.22      0.18      0.20        11
+        pop       0.38      0.60      0.46         5
+      metal       0.60      0.69      0.64        13
+    country       0.43      0.60      0.50        10
+
+avg / total       0.33      0.31      0.30       100
+
+Confusion matrix
+----------------------------------
+[[3 0 3 1 0 1 0 1 2 1]
+ [0 1 1 1 0 0 0 0 2 0]
+ [1 1 2 0 1 2 2 1 1 1]
+ [0 2 3 2 1 0 2 0 0 0]
+ [3 1 0 0 1 0 1 1 0 2]
+ [3 0 1 0 4 2 0 0 0 3]
+ [3 0 3 0 0 0 2 1 1 1]
+ [0 0 0 0 1 0 1 3 0 0]
+ [0 0 2 0 0 0 1 1 9 0]
+ [1 1 1 0 1 0 0 0 0 6]]
+----------------------------------
+Training cross validation round 6
+----------------------------------
+Final Step 1000: Error: 0.212982 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.17      0.43      0.24         7
+      disco       0.33      0.38      0.35         8
+       rock       0.18      0.27      0.21        11
+     reggae       0.50      0.21      0.30        14
+       jazz       0.40      0.20      0.27        10
+  classical       0.00      0.00      0.00        12
+     hiphop       0.20      0.11      0.14         9
+        pop       0.30      0.30      0.30        10
+      metal       0.50      0.75      0.60        12
+    country       0.18      0.29      0.22         7
+
+avg / total       0.29      0.29      0.27       100
+
+Confusion matrix
+----------------------------------
+[[3 0 2 1 0 0 0 1 0 0]
+ [0 3 4 0 0 0 1 0 0 0]
+ [1 0 3 1 1 0 0 1 3 1]
+ [2 1 2 3 0 1 0 0 3 2]
+ [4 0 2 0 2 0 0 0 1 1]
+ [4 0 1 0 2 0 0 3 0 2]
+ [0 2 0 1 0 0 1 2 2 1]
+ [1 1 1 0 0 0 2 3 0 2]
+ [0 1 2 0 0 0 0 0 9 0]
+ [3 1 0 0 0 0 1 0 0 2]]
+----------------------------------
+Training cross validation round 7
+----------------------------------
+Final Step 1000: Error: 0.208956 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.28      0.50      0.36        10
+      disco       0.00      0.00      0.00        13
+       rock       0.22      0.25      0.24         8
+     reggae       0.29      0.22      0.25         9
+       jazz       0.29      0.22      0.25         9
+  classical       0.67      0.15      0.25        13
+     hiphop       0.00      0.00      0.00         3
+        pop       0.67      0.53      0.59        15
+      metal       0.54      0.78      0.64         9
+    country       0.46      0.55      0.50        11
+
+avg / total       0.38      0.34      0.33       100
+
+Confusion matrix
+----------------------------------
+[[5 0 1 1 0 0 2 0 1 0]
+ [0 0 3 0 2 0 2 2 3 1]
+ [0 2 2 0 0 0 3 0 0 1]
+ [1 0 0 2 2 0 2 1 0 1]
+ [3 0 0 1 2 0 0 1 0 2]
+ [6 1 1 1 1 2 0 0 0 1]
+ [0 0 0 1 0 0 0 0 2 0]
+ [1 3 0 0 0 1 1 8 0 1]
+ [0 2 0 0 0 0 0 0 7 0]
+ [2 0 2 1 0 0 0 0 0 6]]
+----------------------------------
+Training cross validation round 8
+----------------------------------
+Final Step 1000: Error: 0.210848 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.20      0.40      0.27        10
+      disco       0.29      0.29      0.29         7
+       rock       0.00      0.00      0.00         6
+     reggae       0.22      0.18      0.20        11
+       jazz       0.00      0.00      0.00        10
+  classical       0.75      0.50      0.60         6
+     hiphop       0.20      0.20      0.20        10
+        pop       0.46      0.55      0.50        11
+      metal       0.62      0.59      0.61        17
+    country       0.12      0.08      0.10        12
+
+avg / total       0.30      0.30      0.29       100
+
+Confusion matrix
+----------------------------------
+[[ 4  0  0  0  1  1  0  1  1  2]
+ [ 0  2  1  0  0  0  3  1  0  0]
+ [ 2  1  0  0  0  0  1  0  1  1]
+ [ 1  1  3  2  1  0  1  0  0  2]
+ [ 2  0  3  2  0  0  0  1  1  1]
+ [ 3  0  0  0  0  3  0  0  0  0]
+ [ 3  0  1  1  0  0  2  1  2  0]
+ [ 0  1  0  3  0  0  1  6  0  0]
+ [ 1  2  0  1  0  0  1  1 10  1]
+ [ 4  0  2  0  1  0  1  2  1  1]]
+----------------------------------
+Training cross validation round 9
+----------------------------------
+Final Step 1000: Error: 0.212422 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.09      0.20      0.13        10
+      disco       0.20      0.09      0.13        11
+       rock       0.00      0.00      0.00        13
+     reggae       0.20      0.20      0.20        10
+       jazz       0.33      0.07      0.11        15
+  classical       0.67      0.67      0.67         6
+     hiphop       0.25      0.18      0.21        11
+        pop       0.41      0.70      0.52        10
+      metal       0.27      0.43      0.33         7
+    country       0.08      0.14      0.11         7
+
+avg / total       0.23      0.23      0.21       100
+
+Confusion matrix
+----------------------------------
+[[2 0 1 2 0 0 1 0 0 4]
+ [0 1 1 3 1 1 1 1 1 1]
+ [4 3 0 0 0 0 0 2 2 2]
+ [1 1 1 2 0 0 2 2 1 0]
+ [3 0 1 2 1 1 1 1 2 3]
+ [2 0 0 0 0 4 0 0 0 0]
+ [5 0 1 0 0 0 2 2 0 1]
+ [1 0 0 1 0 0 0 7 1 0]
+ [1 0 1 0 0 0 1 1 3 0]
+ [3 0 0 0 1 0 0 1 1 1]]
+----------------------------------
+-------------
+we love confusion\_matrices. here is the average for
+              the whole training run.
+[[ 3.  0.  1.  0.  0.  0.  0.  0.  0.  1.]
+ [ 0.  1.  1.  0.  0.  0.  2.  1.  1.  0.]
+ [ 1.  1.  1.  0.  0.  0.  1.  0.  1.  1.]
+ [ 1.  0.  1.  1.  0.  0.  1.  0.  1.  0.]
+ [ 2.  0.  0.  1.  1.  0.  0.  0.  0.  1.]
+ [ 2.  0.  1.  0.  2.  2.  0.  0.  0.  1.]
+ [ 1.  0.  1.  1.  0.  0.  1.  1.  1.  0.]
+ [ 0.  0.  0.  0.  0.  0.  1.  5.  0.  0.]
+ [ 0.  1.  0.  0.  0.  0.  0.  0.  5.  0.]
+ [ 2.  0.  0.  0.  0.  0.  0.  0.  0.  2.]]
+we love metrics.Here is the average accuracy for the CV
+        runs.
+0.262
+    \end{Verbatim}
+
+    Those scores went down, so I presume that I did something wrong or that
+ther is incredible bias or multicoliniarty in this model. I'll try PCA
+and see how that goes.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{decomposition} \PY{k}{import} \PY{n}{PCA}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{p} \PY{o}{=} \PY{n}{PCA}\PY{p}{(}\PY{n}{n\PYZus{}components}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{pcad} \PY{o}{=} \PY{n}{p}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{ffts}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{pcalrc} \PY{o}{=} \PY{n}{LogisticRegressionClassifier}\PY{p}{(}\PY{n}{pcad}\PY{p}{,} \PY{n}{fft\PYZus{}labels}\PY{p}{,} \PY{n}{fft\PYZus{}dict}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{pcalrc}\PY{o}{.}\PY{n}{cross\PYZus{}validate}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Training cross validation round 0
+----------------------------------
+Step 0: Error: -1.000000 updating learning rate: 0.001000
+Final Step 1000: Error: 0.226925 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.29      0.17      0.21        42
+      disco       0.18      0.06      0.09        36
+       rock       0.25      0.12      0.16        25
+     reggae       0.33      0.21      0.25        34
+       jazz       0.30      0.22      0.25        37
+  classical       0.29      0.83      0.43        36
+     hiphop       0.22      0.16      0.19        31
+        pop       0.57      0.46      0.51        28
+      metal       0.43      0.79      0.55        33
+    country       0.22      0.19      0.20        32
+
+avg / total       0.30      0.32      0.28       334
+
+Confusion matrix
+----------------------------------
+[[ 7  1  1  4  3  8  4  0  9  5]
+ [ 3  2  3  2  2 10  2  2 10  0]
+ [ 3  1  3  3  2  3  3  0  4  3]
+ [ 2  2  0  7  4  8  3  2  2  4]
+ [ 3  0  0  0  8 20  1  2  0  3]
+ [ 0  0  0  1  4 30  0  0  0  1]
+ [ 0  1  3  1  0  8  5  4  6  3]
+ [ 1  2  0  1  3  4  2 13  1  1]
+ [ 1  1  1  0  0  1  2  0 26  1]
+ [ 4  1  1  2  1 13  1  0  3  6]]
+----------------------------------
+Training cross validation round 1
+----------------------------------
+Final Step 1000: Error: 0.229097 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.21      0.31      0.25        29
+      disco       0.27      0.11      0.16        35
+       rock       0.12      0.05      0.07        41
+     reggae       0.45      0.26      0.33        35
+       jazz       0.30      0.24      0.27        37
+  classical       0.31      0.84      0.46        32
+     hiphop       0.13      0.07      0.09        30
+        pop       0.41      0.48      0.44        29
+      metal       0.56      0.66      0.60        38
+    country       0.21      0.22      0.21        27
+
+avg / total       0.30      0.32      0.29       333
+
+Confusion matrix
+----------------------------------
+[[ 9  1  3  0  5  3  1  0  0  7]
+ [ 6  4  1  3  3  6  2  4  5  1]
+ [ 4  4  2  1  3  7  4  5  6  5]
+ [ 7  0  1  9  3 10  1  0  2  2]
+ [ 2  0  2  0  9 17  0  3  1  3]
+ [ 0  0  1  1  1 27  0  1  1  0]
+ [ 6  1  1  2  1  5  2  6  5  1]
+ [ 1  2  0  4  2  2  2 14  0  2]
+ [ 2  2  2  0  0  4  1  0 25  2]
+ [ 6  1  3  0  3  5  2  1  0  6]]
+----------------------------------
+Training cross validation round 2
+----------------------------------
+Final Step 1000: Error: 0.226518 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.13      0.21      0.16        29
+      disco       0.08      0.03      0.05        29
+       rock       0.21      0.18      0.19        34
+     reggae       0.30      0.29      0.30        31
+       jazz       0.13      0.12      0.12        26
+  classical       0.32      0.88      0.47        32
+     hiphop       0.35      0.15      0.21        39
+        pop       0.68      0.44      0.54        43
+      metal       0.43      0.66      0.52        29
+    country       0.41      0.17      0.24        41
+
+avg / total       0.33      0.31      0.29       333
+
+Confusion matrix
+----------------------------------
+[[ 6  2  4  4  3  4  0  0  3  3]
+ [ 4  1  3  1  0  9  2  2  5  2]
+ [12  2  6  2  0  7  0  1  3  1]
+ [ 4  1  3  9  0  7  0  2  4  1]
+ [ 4  0  3  4  3 10  1  0  1  0]
+ [ 1  0  1  0  1 28  0  0  0  1]
+ [ 3  2  2  5  4  7  6  4  4  2]
+ [ 2  3  1  2  3  4  7 19  2  0]
+ [ 5  0  1  0  2  2  0  0 19  0]
+ [ 6  1  4  3  7  9  1  0  3  7]]
+----------------------------------
+-------------
+we love confusion\_matrices. here is the average for
+              the whole training run.
+[[  7.   1.   2.   2.   3.   5.   1.   0.   4.   5.]
+ [  4.   2.   2.   2.   1.   8.   2.   2.   6.   1.]
+ [  6.   2.   3.   2.   1.   5.   2.   2.   4.   3.]
+ [  4.   1.   1.   8.   2.   8.   1.   1.   2.   2.]
+ [  3.   0.   1.   1.   6.  15.   0.   1.   0.   2.]
+ [  0.   0.   0.   0.   2.  28.   0.   0.   0.   0.]
+ [  3.   1.   2.   2.   1.   6.   4.   4.   5.   2.]
+ [  1.   2.   0.   2.   2.   3.   3.  15.   1.   1.]
+ [  2.   1.   1.   0.   0.   2.   1.   0.  23.   1.]
+ [  5.   1.   2.   1.   3.   9.   1.   0.   2.   6.]]
+we love metrics.Here is the average accuracy for the CV
+        runs.
+0.317997638357
+    \end{Verbatim}
+
+    Not much better. Results are holding steady around 30\%. On to the MFC
+features.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{c}{\PYZsh{} this was already fit}
+         \PY{n}{lrc\PYZus{}mfc}\PY{o}{.}\PY{n}{cross\PYZus{}validate}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Training cross validation round 0
+----------------------------------
+Step 0: Error: -1.000000 updating learning rate: 0.001000
+Final Step 1000: Error: 0.090336 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.53      0.62      0.57        13
+      disco       0.42      0.56      0.48         9
+       rock       0.14      0.10      0.12        10
+     reggae       0.50      0.62      0.56         8
+       jazz       0.20      0.17      0.18         6
+        pop       0.80      0.75      0.77        16
+  classical       1.00      0.80      0.89        10
+     hiphop       0.25      0.29      0.27         7
+    country       0.50      0.44      0.47         9
+      metal       0.83      0.83      0.83        12
+
+avg / total       0.56      0.56      0.56       100
+
+Confusion matrix
+----------------------------------
+[[ 8  0  0  1  1  0  0  1  0  2]
+ [ 0  5  2  0  0  1  0  1  0  0]
+ [ 4  3  1  1  0  0  0  1  0  0]
+ [ 0  0  0  5  0  2  0  1  0  0]
+ [ 1  0  1  1  1  0  0  1  1  0]
+ [ 0  0  1  1  0 12  0  0  2  0]
+ [ 0  0  0  0  2  0  8  0  0  0]
+ [ 0  3  0  1  0  0  0  2  1  0]
+ [ 2  1  1  0  1  0  0  0  4  0]
+ [ 0  0  1  0  0  0  0  1  0 10]]
+----------------------------------
+Training cross validation round 1
+----------------------------------
+Final Step 1000: Error: 0.076472 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.43      0.75      0.55         8
+      disco       0.60      0.67      0.63         9
+       rock       0.55      0.43      0.48        14
+     reggae       0.33      0.43      0.38         7
+       jazz       0.83      0.42      0.56        12
+        pop       0.64      1.00      0.78         9
+  classical       0.58      0.88      0.70         8
+     hiphop       0.62      0.42      0.50        12
+    country       0.71      0.42      0.53        12
+      metal       0.78      0.78      0.78         9
+
+avg / total       0.62      0.59      0.58       100
+
+Confusion matrix
+----------------------------------
+[[6 0 1 0 0 0 0 0 0 1]
+ [0 6 1 1 0 0 0 1 0 0]
+ [4 2 6 1 0 0 0 0 1 0]
+ [1 1 0 3 0 0 0 1 1 0]
+ [1 0 0 1 5 0 5 0 0 0]
+ [0 0 0 0 0 9 0 0 0 0]
+ [0 0 0 0 0 0 7 0 0 1]
+ [0 1 1 2 0 3 0 5 0 0]
+ [1 0 1 1 1 2 0 1 5 0]
+ [1 0 1 0 0 0 0 0 0 7]]
+----------------------------------
+Training cross validation round 2
+----------------------------------
+Final Step 1000: Error: 0.084849 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.54      0.54      0.54        13
+      disco       0.56      0.62      0.59        16
+       rock       0.75      0.43      0.55         7
+     reggae       0.40      0.50      0.44         8
+       jazz       0.40      0.22      0.29         9
+        pop       0.78      0.64      0.70        11
+  classical       0.89      1.00      0.94         8
+     hiphop       0.47      0.54      0.50        13
+    country       0.33      0.25      0.29         8
+      metal       0.45      0.71      0.56         7
+
+avg / total       0.56      0.55      0.54       100
+
+Confusion matrix
+----------------------------------
+[[ 7  1  0  0  2  0  0  0  1  2]
+ [ 1 10  1  0  0  1  1  0  0  2]
+ [ 1  1  3  0  0  1  0  0  1  0]
+ [ 0  1  0  4  0  0  0  2  1  0]
+ [ 2  2  0  2  2  0  0  0  1  0]
+ [ 0  1  0  1  1  7  0  1  0  0]
+ [ 0  0  0  0  0  0  8  0  0  0]
+ [ 0  1  0  3  0  0  0  7  0  2]
+ [ 1  1  0  0  0  0  0  4  2  0]
+ [ 1  0  0  0  0  0  0  1  0  5]]
+----------------------------------
+Training cross validation round 3
+----------------------------------
+Final Step 1000: Error: 0.079342 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.44      0.50      0.47         8
+      disco       0.43      0.25      0.32        12
+       rock       0.14      0.14      0.14         7
+     reggae       0.55      0.35      0.43        17
+       jazz       0.25      0.25      0.25         4
+        pop       0.56      0.90      0.69        10
+  classical       0.83      0.91      0.87        11
+     hiphop       0.40      0.50      0.44         8
+    country       0.60      0.43      0.50        14
+      metal       0.64      1.00      0.78         9
+
+avg / total       0.52      0.53      0.51       100
+
+Confusion matrix
+----------------------------------
+[[ 4  0  0  0  0  0  1  0  1  2]
+ [ 1  3  3  1  0  2  0  1  1  0]
+ [ 1  1  1  0  0  1  0  2  0  1]
+ [ 2  3  1  6  1  1  0  2  1  0]
+ [ 1  0  0  0  1  1  1  0  0  0]
+ [ 0  0  0  0  0  9  0  1  0  0]
+ [ 0  0  0  0  0  0 10  0  1  0]
+ [ 0  0  0  2  0  0  0  4  0  2]
+ [ 0  0  2  2  2  2  0  0  6  0]
+ [ 0  0  0  0  0  0  0  0  0  9]]
+----------------------------------
+Training cross validation round 4
+----------------------------------
+Final Step 1000: Error: 0.082928 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.38      0.45      0.42        11
+      disco       0.67      0.33      0.44        12
+       rock       0.12      0.11      0.12         9
+     reggae       0.30      0.60      0.40         5
+       jazz       0.33      0.22      0.27        18
+        pop       0.69      0.73      0.71        15
+  classical       0.62      0.89      0.73         9
+     hiphop       0.67      0.29      0.40         7
+    country       0.40      0.50      0.44         8
+      metal       0.44      0.67      0.53         6
+
+avg / total       0.47      0.46      0.45       100
+
+Confusion matrix
+----------------------------------
+[[ 5  0  1  1  1  0  0  0  0  3]
+ [ 1  4  2  1  1  0  0  0  1  2]
+ [ 4  0  1  1  2  1  0  0  0  0]
+ [ 0  0  1  3  0  0  0  0  1  0]
+ [ 1  1  2  3  4  0  4  0  3  0]
+ [ 1  1  0  0  0 11  1  0  1  0]
+ [ 0  0  0  0  1  0  8  0  0  0]
+ [ 0  0  0  1  1  3  0  2  0  0]
+ [ 0  0  1  0  2  1  0  0  4  0]
+ [ 1  0  0  0  0  0  0  1  0  4]]
+----------------------------------
+Training cross validation round 5
+----------------------------------
+Final Step 1000: Error: 0.081835 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.36      0.38      0.37        13
+      disco       0.33      0.33      0.33         6
+       rock       0.20      0.10      0.13        10
+     reggae       0.18      0.18      0.18        11
+       jazz       0.50      0.64      0.56        11
+        pop       0.60      0.75      0.67         4
+  classical       0.92      1.00      0.96        12
+     hiphop       0.55      0.43      0.48        14
+    country       0.44      0.44      0.44         9
+      metal       0.75      0.90      0.82        10
+
+avg / total       0.49      0.51      0.49       100
+
+Confusion matrix
+----------------------------------
+[[ 5  0  2  2  0  0  0  0  3  1]
+ [ 2  2  1  0  0  0  0  1  0  0]
+ [ 5  2  1  0  0  1  0  0  0  1]
+ [ 2  0  0  2  3  0  0  3  1  0]
+ [ 0  0  0  2  7  0  1  0  1  0]
+ [ 0  1  0  0  0  3  0  0  0  0]
+ [ 0  0  0  0  0  0 12  0  0  0]
+ [ 0  1  0  5  0  1  0  6  0  1]
+ [ 0  0  0  0  4  0  0  1  4  0]
+ [ 0  0  1  0  0  0  0  0  0  9]]
+----------------------------------
+Training cross validation round 6
+----------------------------------
+Final Step 1000: Error: 0.091104 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.31      0.62      0.42         8
+      disco       0.45      0.71      0.56         7
+       rock       0.25      0.12      0.17         8
+     reggae       0.56      0.50      0.53        10
+       jazz       0.67      0.55      0.60        11
+        pop       0.91      0.91      0.91        11
+  classical       1.00      0.82      0.90        11
+     hiphop       0.40      0.67      0.50         6
+    country       0.67      0.55      0.60        11
+      metal       1.00      0.71      0.83        17
+
+avg / total       0.68      0.63      0.64       100
+
+Confusion matrix
+----------------------------------
+[[ 5  0  2  0  1  0  0  0  0  0]
+ [ 0  5  1  0  0  1  0  0  0  0]
+ [ 2  3  1  0  1  0  0  0  1  0]
+ [ 1  0  0  5  1  0  0  3  0  0]
+ [ 2  1  0  2  6  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  1  0  0]
+ [ 0  0  0  1  0  0  9  0  1  0]
+ [ 0  0  0  1  0  0  0  4  1  0]
+ [ 3  2  0  0  0  0  0  0  6  0]
+ [ 3  0  0  0  0  0  0  2  0 12]]
+----------------------------------
+Training cross validation round 7
+----------------------------------
+Final Step 1000: Error: 0.075512 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.14      0.14      0.14         7
+      disco       0.50      0.38      0.43        13
+       rock       0.29      0.14      0.19        14
+     reggae       0.50      0.57      0.53         7
+       jazz       0.50      0.57      0.53         7
+        pop       0.71      1.00      0.83        10
+  classical       1.00      0.78      0.88         9
+     hiphop       0.42      0.45      0.43        11
+    country       0.54      0.64      0.58        11
+      metal       0.71      0.91      0.80        11
+
+avg / total       0.53      0.55      0.53       100
+
+Confusion matrix
+----------------------------------
+[[ 1  0  2  1  1  0  0  0  2  0]
+ [ 2  5  2  0  0  2  0  2  0  0]
+ [ 1  2  2  3  1  1  0  1  1  2]
+ [ 0  1  0  4  0  0  0  2  0  0]
+ [ 0  0  0  0  4  0  0  1  2  0]
+ [ 0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  1  0  7  0  0  1]
+ [ 1  2  0  0  0  1  0  5  1  1]
+ [ 2  0  1  0  1  0  0  0  7  0]
+ [ 0  0  0  0  0  0  0  1  0 10]]
+----------------------------------
+Training cross validation round 8
+----------------------------------
+Final Step 1000: Error: 0.094304 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.50      0.40      0.44        10
+      disco       0.20      0.29      0.24         7
+       rock       0.45      0.38      0.42        13
+     reggae       0.57      0.44      0.50         9
+       jazz       0.67      0.50      0.57        12
+        pop       0.46      1.00      0.63         6
+  classical       0.83      0.77      0.80        13
+     hiphop       0.60      0.25      0.35        12
+    country       0.44      0.44      0.44         9
+      metal       0.50      0.89      0.64         9
+
+avg / total       0.55      0.52      0.51       100
+
+Confusion matrix
+----------------------------------
+[[ 4  1  1  0  0  0  0  0  1  3]
+ [ 0  2  0  0  0  1  0  2  0  2]
+ [ 2  4  5  0  0  1  0  0  0  1]
+ [ 1  0  1  4  1  1  0  0  1  0]
+ [ 0  1  0  1  6  1  1  0  2  0]
+ [ 0  0  0  0  0  6  0  0  0  0]
+ [ 0  0  0  0  2  0 10  0  1  0]
+ [ 0  1  1  2  0  2  1  3  0  2]
+ [ 1  0  3  0  0  1  0  0  4  0]
+ [ 0  1  0  0  0  0  0  0  0  8]]
+----------------------------------
+Training cross validation round 9
+----------------------------------
+Final Step 1000: Error: 0.095223 
+ Learn rate: 0.001000
+classification report 
+----------------------------------
+             precision    recall  f1-score   support
+
+      blues       0.36      0.56      0.43         9
+      disco       0.30      0.33      0.32         9
+       rock       0.29      0.25      0.27         8
+     reggae       0.75      0.33      0.46        18
+       jazz       0.54      0.70      0.61        10
+        pop       0.40      0.50      0.44         8
+  classical       0.90      1.00      0.95         9
+     hiphop       0.50      0.70      0.58        10
+    country       0.50      0.11      0.18         9
+      metal       0.42      0.50      0.45        10
+
+avg / total       0.52      0.49      0.47       100
+
+Confusion matrix
+----------------------------------
+[[5 0 1 0 0 0 0 0 0 3]
+ [0 3 1 1 1 1 0 1 1 0]
+ [3 3 2 0 0 0 0 0 0 0]
+ [1 1 0 6 3 2 1 1 0 3]
+ [0 0 1 1 7 0 0 1 0 0]
+ [0 1 1 0 0 4 0 2 0 0]
+ [0 0 0 0 0 0 9 0 0 0]
+ [1 0 0 0 0 2 0 7 0 0]
+ [3 0 1 0 2 1 0 0 1 1]
+ [1 2 0 0 0 0 0 2 0 5]]
+----------------------------------
+-------------
+we love confusion\_matrices. here is the average for
+              the whole training run.
+[[ 5.  0.  1.  0.  0.  0.  0.  0.  0.  1.]
+ [ 0.  4.  1.  0.  0.  0.  0.  0.  0.  0.]
+ [ 2.  2.  2.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  4.  0.  0.  0.  1.  0.  0.]
+ [ 0.  0.  0.  1.  4.  0.  1.  0.  1.  0.]
+ [ 0.  0.  0.  0.  0.  8.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  8.  0.  0.  0.]
+ [ 0.  0.  0.  1.  0.  1.  0.  4.  0.  0.]
+ [ 1.  0.  1.  0.  1.  0.  0.  0.  4.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.  0.  7.]]
+we love metrics.Here is the average accuracy for the CV
+        runs.
+0.539
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}23}]:} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{utils}\PY{o}{.}\PY{n}{plot\PYZus{}confusion\PYZus{}matrix}\PY{p}{(}\PY{n}{lrc\PYZus{}mfc}\PY{o}{.}\PY{n}{metrics}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{cv\PYZus{}average}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{report_files/report_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    I suspect it is likely that we threw away too much information with the
+MFCs by only looking at the short window of time and a very broad mean
+of them. Combining them or a different time-series representation may
+boost our luck.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} 
+\end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
