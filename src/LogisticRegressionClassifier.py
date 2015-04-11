@@ -3,7 +3,6 @@ LogisticRegressionClassifer.py handles implementation of the meaty parts of the
 classifier - estimation of priors and predicting new data.
 """
 
-
 __author__ = "Aaron Gonzales"
 __copyright__ = "MIT"
 __license__ = "MIT"
@@ -11,10 +10,13 @@ __email__ = "agonzales@cs.unm.edu"
 
 
 try:
+    import sys
     import numpy as np
     from scipy.special import expit
     from sklearn.cross_validation import KFold
-    import utils
+    if sys.version_info < ( 3, 2):
+        # python too old, kill the script
+        sys.exit("This script requires Python 3.2 or newer! exiting.")
 except ImportError:
     raise ImportError("This program requires Numpy and scikit-learn")
 
@@ -24,7 +26,7 @@ class LogisticRegressionClassifier(object):
     Main class for the classifer.
     """
 
-    def __init__(self, X, y, class_labels, eta=0.0001, _lambda=0.001):
+    def __init__(self, X, y, class_dict, eta=0.0001, _lambda=0.001):
         """
         Creates a new executor object and initializes the main
         components.
@@ -51,16 +53,17 @@ class LogisticRegressionClassifier(object):
         self.y = y
         self.X_test = None
         self.y_test = None
-        self.class_dict = class_labels
+        self.class_dict = class_dict
 
         # ######### Parameters needed by log.regression
-        self.Delta = None
         self.W = None
+        self.Delta = None
         self.eta = eta
         self._lambda = _lambda
-        self.P = None
-
-        self.fitted_model = None
+        self.error = -1
+        # P = None
+        self.init_weights()
+        self.make_Delta()
 
     def make_Delta(self):
         """
@@ -115,19 +118,7 @@ class LogisticRegressionClassifier(object):
     def logistic(self, x):
         return np.exp(-x) / (1 + np.exp(-x))
 
-    def sig_prime(self, x):
-        """
-        First derivative of the sigmoid function.
-        """
-        return self.sigmoid(x) * (1 - self.sigmoid(x))
-
-    def _logsumexp(self, X, Y):
-        """
-        handy calculator for the log sum exp trick
-        """
-        return np.log(np.exp(np.dot(X, Y)))
-
-    def P(self, X, W):
+    def p_hat(self, X, W):
         """
         Calculates the logistic transform (i.e., probabilities) used in
         training the model.
@@ -142,8 +133,8 @@ class LogisticRegressionClassifier(object):
         P[K-1] = 1
         colsums = np.sum(P, axis=0)
         P = P/colsums
-        self.P = np.exp(P)
-        return self.P
+        P = np.exp(P)
+        return P
 
     def grad_decent(self, rounds):
         """
@@ -158,26 +149,25 @@ class LogisticRegressionClassifier(object):
         Returns:
             W
         """
-
         _lambda = self._lambda
-        error = 0
 
         for i in range(rounds):
-            d = np.dot(self.Delta - np.log(self.P(self.X, self.W)), self.X)
+            d = np.dot(self.Delta - np.log(self.p_hat(self.X, self.W)), self.X)
             # gets the largest deviation
             _error = np.abs(d).max()
-            if _error > error:
+            if _error > self.error:
                 # update learning rate
                 self.eta /= (1 + i % 3/rounds)
-                print('Step %d: Error: %f \n \
-                      \t updating learning rate: %f' % (i, error, self.eta))
-            error = _error
+                print('''Step %d: Error: %f updating learning rate: %f'''
+                      % (i, self.error, self.eta))
+            self.error = _error
             # f = d - (_lambda * W)
             # W += (eta * f)
             self.W += (self.eta * (d - (_lambda * self.W)))
 
-        print('Error: %f \n Learn rate: %f' % (error, self.eta))
-        # return W
+        print('Final Step %d: Error: %f \n Learn rate: %f' % (rounds,
+                                                              self.error,
+                                                              self.eta))
 
     def cross_validate(self):
         kf = KFold(self.X.shape[0], n_folds=2)
@@ -185,14 +175,22 @@ class LogisticRegressionClassifier(object):
             X_train, X_test, y_train, y_test = \
                 self.X[train], self.X[test], self.y[train], self.y[test]
 
-    def train(self, rounds=1000, cv=False):
+    def train(self, rounds=1000, cv=False, reset=False, eta=None, lambda_=None):
         """
         Trains the model on the currently held data.
         """
 
-        if self.W is None:
-            print('initializing weight matrix for the first time')
+        if eta is not None:
+            self.eta = eta
+
+        if lambda_ is not None:
+            self._lambda = lambda_
+
+        if self.W is None or reset is True:
+            print('initializing weight and delta matrix for the first time')
+            self.error = -1
             self.init_weights()
+            # self.Delta = make_Delta(self.class_dict, len(self.y))
 
         if cv is False:
             self.grad_decent(rounds=1000)
@@ -201,7 +199,7 @@ class LogisticRegressionClassifier(object):
         return
 
     def init_weights(self):
-        self.W = 0 + np.zeros(shape=(len(self.class_labels),
+        self.W = 0 + np.zeros(shape=(len(self.class_dict),
                               self.X.shape[1]),
                               dtype='float64')
         # put all ones in the first row
